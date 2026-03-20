@@ -1,0 +1,40 @@
+{
+  "name": "SoftI2CPeripheral",
+  "version": "1.0.0",
+  "description": "Interrupt-driven software I2C peripheral (slave) for AVR. Supports write-only and compound write+read (repeated START) transactions with clock stretching.",
+  "keywords": ["i2c", "twi", "software", "peripheral", "slave", "interrupt", "clock-stretching"],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/depau/SoftI2CPeripheral.git"
+  },
+  "authors": [
+    {
+      "name": "Davide Depau",
+      "url": "https://depau.eu"
+    }
+  ],
+  "license": "GPL-3.0-or-later",
+  "frameworks": ["arduino"],
+  "platforms": ["atmelavr"],
+  "headers": "SoftI2CPeripheral.h",
+  "build": {
+    "srcDir": "src"
+  },
+  "examples": [
+    {
+      "name": "EchoServer",
+      "base": "examples/EchoServer",
+      "files": ["EchoServer.ino"]
+    },
+    {
+      "name": "PingPong",
+      "base": "examples/PingPong",
+      "files": ["PingPong.ino"]
+    },
+    {
+      "name": "RegisterMap",
+      "base": "examples/RegisterMap",
+      "files": ["RegisterMap.ino"]
+    }
+  ]
+}
