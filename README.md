@@ -7,6 +7,9 @@ stretching via ISRs, and delivers complete I2C transactions to your `loop()` as
 events. There is no register map — you receive raw write bytes and provide raw
 read responses.
 
+A "playground" with examples and a simulator setup is available in
+[this repo](https://git.depau.eu/depau/SoftI2C-Arduino-Playground).
+
 ## Features
 
 - Write-only and compound write+read (repeated START) transactions
