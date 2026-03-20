@@ -10,6 +10,10 @@ read responses.
 A "playground" with examples and a simulator setup is available in
 [this repo](https://git.depau.eu/depau/SoftI2C-Arduino-Playground).
 
+> [!IMPORTANT]
+> It is recommended to use `SoftwareSerial` when using this library as the
+> hardware serial sometimes disrupts the I2C interrupts.
+
 ## Features
 
 - Write-only and compound write+read (repeated START) transactions
