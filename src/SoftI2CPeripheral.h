@@ -131,6 +131,7 @@ public:
     // the controller can pull SCL LOW before the ISR fires, losing the
     // rising edge (single-bit EIFR flag gets overwritten by the falling).
     _scl_release();
+    _waitForIdle();
   }
 
   void consume() {
@@ -153,11 +154,14 @@ public:
 
     if (!(*_sda_pinreg & _sda_mask)) {
       // SDA fell while SCL high → START (or repeated START)
-      // Save write length for compound transactions before resetting
-      if (_mode == MODE_WRITE && _rx_count > 0) {
-        _pending_write_len = _rx_count;
-      } else if (_mode == MODE_IDLE) {
+      if (_mode == MODE_IDLE) {
+        // Fresh START: mask non-I2C interrupts for the whole transaction
+        _saved_eimsk = EIMSK;
+        EIMSK = (1 << _int_num_scl) | (1 << _int_num_sda);
         _pending_write_len = 0;
+      } else if (_mode == MODE_WRITE && _rx_count > 0) {
+        // Repeated START: save write-phase byte count; EIMSK already restricted
+        _pending_write_len = _rx_count;
       }
       _mode = MODE_ADDR;
       _bit_count = 0;
@@ -171,6 +175,7 @@ public:
         _event_ready = true;
         _response_needed = false;
       }
+      EIMSK = _saved_eimsk;
       _mode = MODE_IDLE;
       _sda_release();
     }
@@ -206,6 +211,7 @@ public:
             _sda_pull_low(); // ACK
           } else {
             _sda_release(); // NACK
+            EIMSK = _saved_eimsk;
             _mode = MODE_IDLE;
           }
         }
@@ -225,6 +231,7 @@ public:
             _event_write_len = _pending_write_len;
             _rx_read_idx = 0;
             _event_ready = true;
+            EIMSK = _saved_eimsk; // restore — main loop may drain UART; respond() re-restricts
             _scl_pull_low();
             _stretching = true;
             return; // respond() will load TX buffer and release SCL
@@ -253,6 +260,13 @@ private:
     MODE_WRITE,
     MODE_READ
   };
+
+  void _waitForIdle() {
+    uint8_t saved_eimsk = EIMSK;
+    EIMSK = (1 << _int_num_scl) | (1 << _int_num_sda);
+    while (_mode != MODE_IDLE);
+    EIMSK = saved_eimsk;
+  }
 
   bool _handle_rx_byte(uint8_t byte) {
     if (_mode == MODE_ADDR) {
@@ -360,6 +374,7 @@ private:
   uint8_t _address = 0;
   uint8_t _int_num_scl = 0;
   uint8_t _int_num_sda = 0;
+  uint8_t _saved_eimsk = 0;
   volatile uint8_t *_scl_pinreg = nullptr;
   uint8_t _scl_mask = 0;
   volatile uint8_t *_scl_portreg = nullptr;
