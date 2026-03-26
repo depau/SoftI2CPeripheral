@@ -1,6 +1,6 @@
 {
   "name": "SoftI2CPeripheral",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Interrupt-driven software I2C peripheral (slave) for AVR. Supports write-only and compound write+read (repeated START) transactions with clock stretching.",
   "keywords": ["i2c", "twi", "software", "peripheral", "slave", "interrupt", "clock-stretching"],
   "repository": {
