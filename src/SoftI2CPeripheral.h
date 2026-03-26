@@ -99,6 +99,8 @@ public:
 
   // ---- Main-loop API ----
 
+  void setAddress(const uint8_t address) { _address = address; }
+
   bool available() const { return _event_ready; }
   bool needsResponse() const { return _response_needed; }
   bool isIdle() const { return _mode == MODE_IDLE; }
@@ -371,7 +373,7 @@ private:
   volatile bool _response_needed = false;
   volatile uint8_t _event_write_len = 0;
 
-  uint8_t _address = 0;
+  volatile uint8_t _address = 0;
   uint8_t _int_num_scl = 0;
   uint8_t _int_num_sda = 0;
   uint8_t _saved_eimsk = 0;
